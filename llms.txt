@@ -24,10 +24,10 @@ The importer auto-detects columns from a header row. It accepts:
 - Minimal 3-column CSV: `date,tokens,cost`.
 
 ## Auto-import (Claude Code)
-The repo bundles `export-usage.js`, a zero-dependency Node script that reads Claude Code's local session logs (`~/.claude/projects/**/*.jsonl`), aggregates daily tokens (input + output + cache) and estimates cost from public list prices, then prints JSON ready to paste into the import box. Run with no install via `npx token-calendar-export --copy` (clipboard), `--out usage.json`, or `--days N`. It only reads local files; nothing is uploaded.
+The repo bundles `export-usage.js`, a zero-dependency Node script that reads Claude Code's local session logs (`~/.claude/projects/**/*.jsonl`), aggregates daily tokens (input + output + cache) and estimates cost from public list prices, then prints JSON ready to paste into the import box. Usage: `node export-usage.js --copy` (clipboard), `--out usage.json`, or `--days N`. It only reads local files; nothing is uploaded.
 
 ## MCP server (Claude Code)
-The repo also ships `mcp-server.js`, an optional Model Context Protocol server. Add it with `claude mcp add token-calendar -- npx -y -p token-calendar-export token-calendar-mcp` and Claude can answer questions about your own token spend in-conversation via a `get_token_usage` tool (optional `days` argument), reading the same local logs. Published to npm as `token-calendar-export`.
+The repo also ships `mcp-server.js`, an optional Model Context Protocol server. From a clone, run `npm install @modelcontextprotocol/sdk` then `claude mcp add token-calendar -- node /absolute/path/to/mcp-server.js`, and Claude can answer questions about your own token spend in-conversation via a `get_token_usage` tool (optional `days` argument), reading the same local logs.
 
 ## Links
 - Live demo: https://yifanliu734-coder.github.io/token-calendar/

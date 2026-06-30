@@ -7,9 +7,8 @@
 // Claude Code's local logs (~/.claude/projects). It reuses the same aggregation
 // as export-usage.js. Cost is estimated from public list prices, not a bill.
 //
-// Add it to Claude Code:
-//   claude mcp add token-calendar -- npx -y token-calendar-export token-calendar-mcp
-// or, from a local clone:
+// Add it to Claude Code (from a clone of this repo):
+//   npm install @modelcontextprotocol/sdk
 //   claude mcp add token-calendar -- node /absolute/path/to/mcp-server.js
 
 let Server, StdioServerTransport, ListToolsRequestSchema, CallToolRequestSchema;

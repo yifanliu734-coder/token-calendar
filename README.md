@@ -24,7 +24,7 @@ I kept losing track of how much I was spending on AI coding agents. The console 
 - 📊 **Day / Week / Month / Year** views with totals, daily average, peak day, longest streak
 - 🤖 **Per-model breakdown** — see which models drove each day's spend
 - 🧩 **Tool-agnostic import** — Claude Code / Anthropic Console CSV, Codex / OpenAI usage, plain JSON, or a 3-column CSV (`date,tokens,cost`)
-- ⚡ **One-command auto-import** — `npx token-calendar-export` reads Claude Code's local logs and prints ready-to-paste JSON, no manual export
+- ⚡ **One-command auto-import** — a bundled Node script reads Claude Code's local logs and prints ready-to-paste JSON, no manual export
 - 🔌 **Ask Claude directly** — an optional MCP server lets you ask Claude *"how much did I spend this month?"* right inside Claude Code
 - 🌐 **9 languages built in** — English, 中文, 日本語, 한국어, Español, Français, Deutsch, Português, Русский
 - 🌗 **Dark / light + accent color** themes
@@ -51,27 +51,26 @@ The importer auto-detects columns — it looks for a `date`, a token count (or s
 
 ## Auto-import from Claude Code logs
 
-Using Claude Code? Skip the manual export. A tiny zero-dependency Node script reads your **local** session logs (`~/.claude/projects/**/*.jsonl`) and prints JSON you can paste straight into the import box. No install needed — run it with `npx`:
+Using Claude Code? Skip the manual export. This repo ships a tiny zero-dependency Node script that reads your **local** session logs (`~/.claude/projects/**/*.jsonl`) and prints JSON you can paste straight into the import box. Clone the repo (or just grab `export-usage.js`) and run:
 
 ```bash
-npx token-calendar-export --copy        # aggregate everything, copy to clipboard (macOS)
-npx token-calendar-export --out usage.json
-npx token-calendar-export --days 90     # last 90 days only
+node export-usage.js --copy        # aggregate everything, copy to clipboard (macOS)
+node export-usage.js --out usage.json
+node export-usage.js --days 90     # last 90 days only
 ```
-
-(Or from a clone of this repo: `node export-usage.js --copy`.)
 
 Then drop or paste it into Token Calendar → Merge. It sums daily tokens (input + output + cache) and **estimates** cost from public list prices — your real bill is in the Anthropic Console. Nothing leaves your machine; the script only reads local files.
 
 ## Ask Claude inside Claude Code (MCP)
 
-Want to just *ask*? Add the bundled MCP server and Claude can answer questions about your own spend — "how much did I burn this month?", "which day was the peak?" — by reading the same local logs.
+Want to just *ask*? Add the bundled MCP server and Claude can answer questions about your own spend — "how much did I burn this month?", "which day was the peak?" — by reading the same local logs. From a clone of this repo:
 
 ```bash
-claude mcp add token-calendar -- npx -y -p token-calendar-export token-calendar-mcp
+npm install @modelcontextprotocol/sdk
+claude mcp add token-calendar -- node /absolute/path/to/mcp-server.js
 ```
 
-It exposes one tool, `get_token_usage` (optional `days` argument), returning per-day tokens, an estimated cost, and a summary. The MCP server only needs `@modelcontextprotocol/sdk` (pulled in automatically by `npx`); the web app itself stays dependency-free.
+It exposes one tool, `get_token_usage` (optional `days` argument), returning per-day tokens, an estimated cost, and a summary. The MCP server needs `@modelcontextprotocol/sdk`; the web app itself stays dependency-free.
 
 ## Share your month
 
