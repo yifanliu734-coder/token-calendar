@@ -24,6 +24,7 @@ I kept losing track of how much I was spending on AI coding agents. The console 
 - 📊 **Day / Week / Month / Year** views with totals, daily average, peak day, longest streak
 - 🤖 **Per-model breakdown** — see which models drove each day's spend
 - 🧩 **Tool-agnostic import** — Claude Code / Anthropic Console CSV, Codex / OpenAI usage, plain JSON, or a 3-column CSV (`date,tokens,cost`)
+- ⚡ **One-command auto-import** — a bundled Node script reads Claude Code's local logs and prints ready-to-paste JSON, no manual export
 - 🌐 **9 languages built in** — English, 中文, 日本語, 한국어, Español, Français, Deutsch, Português, Русский
 - 🌗 **Dark / light + accent color** themes
 - 🖼️ **Share poster** — export a clean image of your month
@@ -46,6 +47,18 @@ Go to the [live demo](https://yifanliu734-coder.github.io/token-calendar/).
 3. Drop the file (or paste JSON / CSV) → Merge
 
 The importer auto-detects columns — it looks for a `date`, a token count (or separate `input`/`output` token columns), an optional `cost`, and an optional `model`. The demo data is fake — clear it and import your own to see real numbers.
+
+## Auto-import from Claude Code logs
+
+Using Claude Code? Skip the manual export. This repo ships a tiny zero-dependency Node script that reads your **local** session logs (`~/.claude/projects/**/*.jsonl`) and prints JSON you can paste straight into the import box:
+
+```bash
+node export-usage.js --copy        # aggregate everything, copy to clipboard (macOS)
+node export-usage.js --out usage.json
+node export-usage.js --days 90     # last 90 days only
+```
+
+Then drop or paste it into Token Calendar → Merge. It sums daily tokens (input + output + cache) and **estimates** cost from public list prices — your real bill is in the Anthropic Console. Nothing leaves your machine; the script only reads local files.
 
 ## Share your month
 

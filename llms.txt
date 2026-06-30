@@ -23,6 +23,9 @@ The importer auto-detects columns from a header row. It accepts:
 - CSV from any other tool: it matches a date column (`date`/`day`), a token column (`token`, or separate input/output token columns), an optional cost column (`cost`/`price`), and an optional `model` column.
 - Minimal 3-column CSV: `date,tokens,cost`.
 
+## Auto-import (Claude Code)
+The repo bundles `export-usage.js`, a zero-dependency Node script that reads Claude Code's local session logs (`~/.claude/projects/**/*.jsonl`), aggregates daily tokens (input + output + cache) and estimates cost from public list prices, then prints JSON ready to paste into the import box. Usage: `node export-usage.js --copy` (clipboard), `--out usage.json`, or `--days N`. It only reads local files; nothing is uploaded.
+
 ## Links
 - Live demo: https://yifanliu734-coder.github.io/token-calendar/
 - Source: https://github.com/yifanliu734-coder/token-calendar
