@@ -1,5 +1,11 @@
 # Token Calendar
 
+[![Live demo](https://img.shields.io/badge/demo-live-D97757)](https://yifanliu734-coder.github.io/token-calendar/)
+[![GitHub stars](https://img.shields.io/github/stars/yifanliu734-coder/token-calendar?style=flat&color=D97757)](https://github.com/yifanliu734-coder/token-calendar/stargazers)
+![Single file, no deps](https://img.shields.io/badge/single%20file-no%20deps-D97757)
+![100% local](https://img.shields.io/badge/100%25-local-D97757)
+[![License: MIT](https://img.shields.io/badge/license-MIT-D97757)](LICENSE)
+
 A calendar heatmap for your **AI coding token spend**. See how much you burn each day at a glance — works with **Claude Code, Codex, Gemini CLI, or any tool** that exports usage. Import a CSV or JSON and you're done.
 
 **One single HTML file. No backend. No tracking. Your data never leaves the browser.**
