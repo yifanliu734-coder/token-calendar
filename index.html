@@ -1,9 +1,24 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Token Calendar</title>
+<title>Token Calendar — Track your AI coding token spend</title>
+<meta name="description" content="A privacy-first calendar heatmap for your AI coding token spend. Works with Claude Code, Codex, Gemini CLI and any tool that exports usage — import a CSV or JSON and see daily cost, tokens and per-model breakdown at a glance. Single HTML file, 100% local, no backend.">
+<meta name="keywords" content="token calendar, AI coding usage, Claude Code cost, Codex usage, LLM token tracker, token spend heatmap, AI usage dashboard, Anthropic Console CSV, developer tool">
+<link rel="canonical" href="https://yifanliu734-coder.github.io/token-calendar/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Token Calendar — Track your AI coding token spend">
+<meta property="og:description" content="A GitHub-contributions-style heatmap for your AI coding token spend. Works with Claude Code, Codex, Gemini CLI and any tool. 100% local, single HTML file.">
+<meta property="og:url" content="https://yifanliu734-coder.github.io/token-calendar/">
+<meta property="og:image" content="https://yifanliu734-coder.github.io/token-calendar/screenshots/cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Token Calendar — Track your AI coding token spend">
+<meta name="twitter:description" content="A privacy-first heatmap for your AI coding token spend. Claude Code, Codex, Gemini CLI — any tool. 100% local.">
+<meta name="twitter:image" content="https://yifanliu734-coder.github.io/token-calendar/screenshots/cover.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Token Calendar","applicationCategory":"DeveloperApplication","operatingSystem":"Any (browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A privacy-first calendar heatmap for AI coding token spend. Works with Claude Code, Codex, Gemini CLI and any tool that exports usage data. Single HTML file, runs fully in the browser, no backend.","url":"https://yifanliu734-coder.github.io/token-calendar/","license":"https://opensource.org/licenses/MIT"}
+</script>
 <style>
 :root {
   --bg: #0E0E14;
@@ -323,6 +338,16 @@ body.light .heat-cell.tier-peak .h-top, body.light .heat-cell.tier-peak .h-bot {
   transition: border-color .15s, color .15s, background .15s;
 }
 .mode-btn.on { border-color: var(--accent); color: var(--text); background: var(--accent-soft); }
+.lang-select {
+  width: 100%; padding: 11px 38px 11px 14px; border-radius: var(--r-sm);
+  background: var(--s1); border: 1.5px solid var(--sep);
+  color: var(--text); font-size: var(--text-sm); font-weight: var(--fw-semibold);
+  cursor: pointer; outline: none; -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  transition: border-color .15s;
+}
+.lang-select:focus { border-color: var(--accent); }
 .swatch-row { display: flex; gap: 10px; }
 .swatch {
   width: 32px; height: 32px; border-radius: 50%; border: 2.5px solid transparent;
@@ -583,10 +608,7 @@ body.light .heat-cell.tier-peak .h-top, body.light .heat-cell.tier-peak .h-bot {
   <div class="set-title" id="setTitle">设置</div>
   <div class="set-section">
     <div class="set-label" id="setLblLang">语言 / Language</div>
-    <div class="mode-row">
-      <button class="mode-btn" id="langBtnZh" onclick="applyLang('zh',this)">中文</button>
-      <button class="mode-btn" id="langBtnEn" onclick="applyLang('en',this)">English</button>
-    </div>
+    <select class="lang-select" id="langSelect" onchange="applyLang(this.value)"></select>
   </div>
   <div class="set-section">
   <div class="set-label" id="setLblAppearance">外观</div>
@@ -674,37 +696,176 @@ let colorMode = localStorage.getItem('_tc_mode') || 'dark';
 let accentColor = localStorage.getItem('_tc_accent') || '#D97757';
 let _lang = localStorage.getItem('_tc_lang') || 'en';
 const LANG = {
-  zh: {
-    settings:'设置', appearance:'外观', dark:'深色', light:'浅色',
-    accent:'主题色', data:'数据', importData:'⬆ 导入数据',
-    monthlyCost:'本月花费', yearlyCost:'本年花费', allTimeCost:'累计花费',
-    dailyAvg:'日均花费', peak:'峰值',
-    tabs:['日','周','月','年'],
-    mon:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
-    thisWeek:'本周', thisMonth:'本月', thisYear:'今年', allYears:'全部年份',
-    days:'天', allTime:'全部',
-    vol:'量', activeDays:'活跃天', streak:'最长连续', streakUnit:'天', models:'使用模型',
-    dow:['日','一','二','三','四','五','六'], dowFull:['周日','周一','周二','周三','周四','周五','周六'],
-    pending:'未更新', appTitle:'Token 日历',
-    importTitle:'导入数据', importHint:'支持 JSON · Anthropic Console CSV · 三列 CSV（date,tokens,cost）',
-    importBtn:'选择文件（.json / .csv）', importTA:'粘贴 JSON 或 CSV...', cancel:'取消', merge:'合并导入',
-    parsed:'识别到', records:'条记录', errEmpty:'请输入数据或上传文件', errJson:'JSON 格式错误，请检查', errNoData:'未识别到有效数据',
-  },
   en: {
+    _name:'English',
     settings:'Settings', appearance:'Appearance', dark:'Dark', light:'Light',
     accent:'Accent Color', data:'Data', importData:'⬆ Import',
     monthlyCost:'Monthly', yearlyCost:'Yearly', allTimeCost:'All Time',
     dailyAvg:'Daily Avg', peak:'Peak',
     tabs:['Day','Week','Month','Year'],
     mon:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    monthsFull:['January','February','March','April','May','June','July','August','September','October','November','December'],
     thisWeek:'This Week', thisMonth:'This Month', thisYear:'This Year', allYears:'All Years',
     days:' days', allTime:'All Time',
     vol:'Vol', activeDays:'Active Days', streak:'Best Streak', streakUnit:' days', models:'Models',
     dow:['Su','Mo','Tu','We','Th','Fr','Sa'], dowFull:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
     pending:'—', appTitle:'Token Calendar',
-    importTitle:'Import Data', importHint:'Supports JSON · Anthropic Console CSV · 3-column CSV (date,tokens,cost)',
+    importTitle:'Import Data', importHint:'Works with any AI coding tool — drop a JSON, Anthropic Console CSV, or a 3-column CSV (date,tokens,cost).',
     importBtn:'Choose file (.json / .csv)', importTA:'Paste JSON or CSV...', cancel:'Cancel', merge:'Merge Import',
     parsed:'Parsed', records:'records', errEmpty:'Please enter data or upload a file', errJson:'Invalid JSON format', errNoData:'No valid data recognized',
+    pSpent:'Spent', pTokens:'Tokens', pPeak:'Peak day', pScan:'Scan to try', pSave:'Save poster', pUsage:'AI coding usage',
+  },
+  zh: {
+    _name:'中文',
+    settings:'设置', appearance:'外观', dark:'深色', light:'浅色',
+    accent:'主题色', data:'数据', importData:'⬆ 导入数据',
+    monthlyCost:'本月花费', yearlyCost:'本年花费', allTimeCost:'累计花费',
+    dailyAvg:'日均花费', peak:'峰值',
+    tabs:['日','周','月','年'],
+    mon:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+    monthsFull:['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+    thisWeek:'本周', thisMonth:'本月', thisYear:'今年', allYears:'全部年份',
+    days:'天', allTime:'全部',
+    vol:'量', activeDays:'活跃天', streak:'最长连续', streakUnit:'天', models:'使用模型',
+    dow:['日','一','二','三','四','五','六'], dowFull:['周日','周一','周二','周三','周四','周五','周六'],
+    pending:'未更新', appTitle:'Token 日历',
+    importTitle:'导入数据', importHint:'兼容任意 AI 编程工具 — 拖入 JSON、Anthropic Console CSV，或三列 CSV（date,tokens,cost）。',
+    importBtn:'选择文件（.json / .csv）', importTA:'粘贴 JSON 或 CSV...', cancel:'取消', merge:'合并导入',
+    parsed:'识别到', records:'条记录', errEmpty:'请输入数据或上传文件', errJson:'JSON 格式错误，请检查', errNoData:'未识别到有效数据',
+    pSpent:'月度花费', pTokens:'总 Token', pPeak:'单日峰值', pScan:'扫码体验', pSave:'保存海报', pUsage:'AI 编程用量',
+  },
+  ja: {
+    _name:'日本語',
+    settings:'設定', appearance:'外観', dark:'ダーク', light:'ライト',
+    accent:'アクセント', data:'データ', importData:'⬆ インポート',
+    monthlyCost:'今月', yearlyCost:'今年', allTimeCost:'累計',
+    dailyAvg:'日平均', peak:'ピーク',
+    tabs:['日','週','月','年'],
+    mon:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+    monthsFull:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+    thisWeek:'今週', thisMonth:'今月', thisYear:'今年', allYears:'全期間',
+    days:'日', allTime:'全期間',
+    vol:'量', activeDays:'稼働日', streak:'最長連続', streakUnit:'日', models:'モデル',
+    dow:['日','月','火','水','木','金','土'], dowFull:['日','月','火','水','木','金','土'],
+    pending:'—', appTitle:'Token カレンダー',
+    importTitle:'データインポート', importHint:'あらゆる AI コーディングツールに対応 — JSON、Anthropic Console CSV、または 3 列 CSV（date,tokens,cost）をドロップ。',
+    importBtn:'ファイルを選択（.json / .csv）', importTA:'JSON または CSV を貼り付け...', cancel:'キャンセル', merge:'マージ取込',
+    parsed:'認識', records:'件', errEmpty:'データを入力するかファイルをアップロードしてください', errJson:'JSON 形式が無効です', errNoData:'有効なデータが見つかりません',
+    pSpent:'支出', pTokens:'トークン', pPeak:'ピーク日', pScan:'スキャンして試す', pSave:'ポスターを保存', pUsage:'AI コーディング利用',
+  },
+  ko: {
+    _name:'한국어',
+    settings:'설정', appearance:'외관', dark:'다크', light:'라이트',
+    accent:'강조색', data:'데이터', importData:'⬆ 가져오기',
+    monthlyCost:'이번 달', yearlyCost:'올해', allTimeCost:'누적',
+    dailyAvg:'일 평균', peak:'최고',
+    tabs:['일','주','월','년'],
+    mon:['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+    monthsFull:['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+    thisWeek:'이번 주', thisMonth:'이번 달', thisYear:'올해', allYears:'전체',
+    days:'일', allTime:'전체',
+    vol:'사용량', activeDays:'활동일', streak:'최장 연속', streakUnit:'일', models:'모델',
+    dow:['일','월','화','수','목','금','토'], dowFull:['일','월','화','수','목','금','토'],
+    pending:'—', appTitle:'Token 캘린더',
+    importTitle:'데이터 가져오기', importHint:'모든 AI 코딩 도구 지원 — JSON, Anthropic Console CSV 또는 3열 CSV(date,tokens,cost)를 드롭하세요.',
+    importBtn:'파일 선택 (.json / .csv)', importTA:'JSON 또는 CSV 붙여넣기...', cancel:'취소', merge:'병합 가져오기',
+    parsed:'인식', records:'건', errEmpty:'데이터를 입력하거나 파일을 업로드하세요', errJson:'잘못된 JSON 형식', errNoData:'유효한 데이터를 찾을 수 없습니다',
+    pSpent:'지출', pTokens:'토큰', pPeak:'최고일', pScan:'스캔하여 체험', pSave:'포스터 저장', pUsage:'AI 코딩 사용량',
+  },
+  es: {
+    _name:'Español',
+    settings:'Ajustes', appearance:'Apariencia', dark:'Oscuro', light:'Claro',
+    accent:'Color de acento', data:'Datos', importData:'⬆ Importar',
+    monthlyCost:'Mensual', yearlyCost:'Anual', allTimeCost:'Total',
+    dailyAvg:'Promedio diario', peak:'Pico',
+    tabs:['Día','Semana','Mes','Año'],
+    mon:['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+    monthsFull:['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+    thisWeek:'Esta semana', thisMonth:'Este mes', thisYear:'Este año', allYears:'Todos los años',
+    days:' días', allTime:'Todo',
+    vol:'Vol', activeDays:'Días activos', streak:'Mejor racha', streakUnit:' días', models:'Modelos',
+    dow:['Do','Lu','Ma','Mi','Ju','Vi','Sá'], dowFull:['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],
+    pending:'—', appTitle:'Token Calendar',
+    importTitle:'Importar datos', importHint:'Compatible con cualquier herramienta de IA — suelta un JSON, un CSV de Anthropic Console o un CSV de 3 columnas (date,tokens,cost).',
+    importBtn:'Elegir archivo (.json / .csv)', importTA:'Pega JSON o CSV...', cancel:'Cancelar', merge:'Combinar e importar',
+    parsed:'Detectados', records:'registros', errEmpty:'Introduce datos o sube un archivo', errJson:'Formato JSON no válido', errNoData:'No se reconocieron datos válidos',
+    pSpent:'Gastado', pTokens:'Tokens', pPeak:'Día pico', pScan:'Escanea para probar', pSave:'Guardar póster', pUsage:'Uso de codificación con IA',
+  },
+  fr: {
+    _name:'Français',
+    settings:'Paramètres', appearance:'Apparence', dark:'Sombre', light:'Clair',
+    accent:'Couleur d\'accent', data:'Données', importData:'⬆ Importer',
+    monthlyCost:'Mensuel', yearlyCost:'Annuel', allTimeCost:'Total',
+    dailyAvg:'Moy. quotidienne', peak:'Pic',
+    tabs:['Jour','Semaine','Mois','Année'],
+    mon:['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'],
+    monthsFull:['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
+    thisWeek:'Cette semaine', thisMonth:'Ce mois', thisYear:'Cette année', allYears:'Toutes les années',
+    days:' jours', allTime:'Tout',
+    vol:'Vol', activeDays:'Jours actifs', streak:'Meilleure série', streakUnit:' jours', models:'Modèles',
+    dow:['Di','Lu','Ma','Me','Je','Ve','Sa'], dowFull:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
+    pending:'—', appTitle:'Token Calendar',
+    importTitle:'Importer des données', importHint:'Compatible avec tout outil de codage IA — déposez un JSON, un CSV Anthropic Console ou un CSV à 3 colonnes (date,tokens,cost).',
+    importBtn:'Choisir un fichier (.json / .csv)', importTA:'Collez du JSON ou CSV...', cancel:'Annuler', merge:'Fusionner et importer',
+    parsed:'Détectés', records:'enregistrements', errEmpty:'Saisissez des données ou importez un fichier', errJson:'Format JSON invalide', errNoData:'Aucune donnée valide reconnue',
+    pSpent:'Dépensé', pTokens:'Tokens', pPeak:'Jour de pic', pScan:'Scannez pour essayer', pSave:'Enregistrer l\'affiche', pUsage:'Utilisation du codage IA',
+  },
+  de: {
+    _name:'Deutsch',
+    settings:'Einstellungen', appearance:'Darstellung', dark:'Dunkel', light:'Hell',
+    accent:'Akzentfarbe', data:'Daten', importData:'⬆ Importieren',
+    monthlyCost:'Monatlich', yearlyCost:'Jährlich', allTimeCost:'Gesamt',
+    dailyAvg:'Tagesdurchschnitt', peak:'Spitze',
+    tabs:['Tag','Woche','Monat','Jahr'],
+    mon:['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'],
+    monthsFull:['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
+    thisWeek:'Diese Woche', thisMonth:'Dieser Monat', thisYear:'Dieses Jahr', allYears:'Alle Jahre',
+    days:' Tage', allTime:'Gesamt',
+    vol:'Vol', activeDays:'Aktive Tage', streak:'Beste Serie', streakUnit:' Tage', models:'Modelle',
+    dow:['So','Mo','Di','Mi','Do','Fr','Sa'], dowFull:['So','Mo','Di','Mi','Do','Fr','Sa'],
+    pending:'—', appTitle:'Token Calendar',
+    importTitle:'Daten importieren', importHint:'Funktioniert mit jedem KI-Coding-Tool — JSON, Anthropic Console CSV oder 3-Spalten-CSV (date,tokens,cost) ablegen.',
+    importBtn:'Datei wählen (.json / .csv)', importTA:'JSON oder CSV einfügen...', cancel:'Abbrechen', merge:'Zusammenführen',
+    parsed:'Erkannt', records:'Einträge', errEmpty:'Daten eingeben oder Datei hochladen', errJson:'Ungültiges JSON-Format', errNoData:'Keine gültigen Daten erkannt',
+    pSpent:'Ausgegeben', pTokens:'Tokens', pPeak:'Spitzentag', pScan:'Zum Testen scannen', pSave:'Poster speichern', pUsage:'KI-Coding-Nutzung',
+  },
+  pt: {
+    _name:'Português',
+    settings:'Configurações', appearance:'Aparência', dark:'Escuro', light:'Claro',
+    accent:'Cor de destaque', data:'Dados', importData:'⬆ Importar',
+    monthlyCost:'Mensal', yearlyCost:'Anual', allTimeCost:'Total',
+    dailyAvg:'Média diária', peak:'Pico',
+    tabs:['Dia','Semana','Mês','Ano'],
+    mon:['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+    monthsFull:['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+    thisWeek:'Esta semana', thisMonth:'Este mês', thisYear:'Este ano', allYears:'Todos os anos',
+    days:' dias', allTime:'Tudo',
+    vol:'Vol', activeDays:'Dias ativos', streak:'Melhor sequência', streakUnit:' dias', models:'Modelos',
+    dow:['Do','Se','Te','Qa','Qi','Sx','Sá'], dowFull:['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
+    pending:'—', appTitle:'Token Calendar',
+    importTitle:'Importar dados', importHint:'Funciona com qualquer ferramenta de IA — solte um JSON, um CSV do Anthropic Console ou um CSV de 3 colunas (date,tokens,cost).',
+    importBtn:'Escolher arquivo (.json / .csv)', importTA:'Cole JSON ou CSV...', cancel:'Cancelar', merge:'Mesclar e importar',
+    parsed:'Reconhecidos', records:'registros', errEmpty:'Insira dados ou envie um arquivo', errJson:'Formato JSON inválido', errNoData:'Nenhum dado válido reconhecido',
+    pSpent:'Gasto', pTokens:'Tokens', pPeak:'Dia de pico', pScan:'Escaneie para testar', pSave:'Salvar pôster', pUsage:'Uso de codificação com IA',
+  },
+  ru: {
+    _name:'Русский',
+    settings:'Настройки', appearance:'Оформление', dark:'Тёмная', light:'Светлая',
+    accent:'Акцентный цвет', data:'Данные', importData:'⬆ Импорт',
+    monthlyCost:'За месяц', yearlyCost:'За год', allTimeCost:'Всего',
+    dailyAvg:'Среднее в день', peak:'Пик',
+    tabs:['День','Неделя','Месяц','Год'],
+    mon:['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'],
+    monthsFull:['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+    thisWeek:'Эта неделя', thisMonth:'Этот месяц', thisYear:'Этот год', allYears:'Все годы',
+    days:' дн.', allTime:'Всё время',
+    vol:'Объём', activeDays:'Активные дни', streak:'Лучшая серия', streakUnit:' дн.', models:'Модели',
+    dow:['Вс','Пн','Вт','Ср','Чт','Пт','Сб'], dowFull:['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+    pending:'—', appTitle:'Token Календарь',
+    importTitle:'Импорт данных', importHint:'Работает с любым ИИ-инструментом — перетащите JSON, CSV из Anthropic Console или CSV из 3 столбцов (date,tokens,cost).',
+    importBtn:'Выбрать файл (.json / .csv)', importTA:'Вставьте JSON или CSV...', cancel:'Отмена', merge:'Объединить и импортировать',
+    parsed:'Распознано', records:'записей', errEmpty:'Введите данные или загрузите файл', errJson:'Неверный формат JSON', errNoData:'Подходящие данные не найдены',
+    pSpent:'Потрачено', pTokens:'Токены', pPeak:'Пиковый день', pScan:'Сканируйте, чтобы попробовать', pSave:'Сохранить постер', pUsage:'Использование ИИ-кодинга',
   }
 };
 function t(k){ return LANG[_lang]?.[k] ?? k; }
@@ -801,9 +962,14 @@ function _syncLangDOM() {
   });
   const fileBtnTxt = document.getElementById('modalFileBtnTxt'); if(fileBtnTxt) fileBtnTxt.textContent = t('importBtn');
   const ta = document.getElementById('importTA'); if(ta) ta.placeholder = t('importTA');
-  // lang btns
-  document.getElementById('langBtnZh').classList.toggle('on', _lang==='zh');
-  document.getElementById('langBtnEn').classList.toggle('on', _lang==='en');
+  // lang picker
+  const sel = document.getElementById('langSelect');
+  if (sel) {
+    if (!sel.options.length) {
+      sel.innerHTML = Object.entries(LANG).map(([code, l]) => `<option value="${code}">${l._name}</option>`).join('');
+    }
+    sel.value = _lang;
+  }
 }
 
 function hexToRgba(hex, a) {
@@ -1394,8 +1560,8 @@ function openPoster() {
   const maxTokens = monthAmts.length ? Math.max(...monthAmts.map(x=>x.tokens)) : 1;
 
   // calendar grid html
-  const isZh = _lang === 'zh';
-  const DOW_LABELS = isZh ? ['日','一','二','三','四','五','六'] : ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const cjk = ['zh','ja'].includes(_lang);
+  const DOW_LABELS = t('dow');
   let calHtml = DOW_LABELS.map(l=>`<div class="pc-dow">${l}</div>`).join('');
   for (let i=0; i<startDow; i++) calHtml += `<div class="pc-mday empty"></div>`;
   const todayD = (pY===today.getFullYear()&&pM===today.getMonth()) ? today.getDate() : -1;
@@ -1421,9 +1587,10 @@ function openPoster() {
     calHtml += `<div class="${cls}"><span class="mday-num">${d}</span></div>`;
   }
 
-  const MONTH_NAMES = isZh
-    ? ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
-    : ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const MONTH_NAMES = t('monthsFull');
+  const dateLabel = cjk ? `${pY}年${MONTH_NAMES[pM]}`
+    : (_lang === 'ko' ? `${pY}년 ${MONTH_NAMES[pM]}`
+    : `${MONTH_NAMES[pM]} ${pY}`);
 
   // ball decorations (tinted by accent)
   const r3=parseInt(accentColor.slice(1,3),16), g3=parseInt(accentColor.slice(3,5),16), b3=parseInt(accentColor.slice(5,7),16);
@@ -1449,8 +1616,8 @@ function openPoster() {
         <div class="pc-app-row">
           <div class="pc-app-icon" style="background:linear-gradient(135deg,${lighten(60)},${accentColor})">🤖</div>
           <div>
-            <div class="pc-app-name">${isZh ? 'Token 日历' : 'Token Calendar'}</div>
-            <div class="pc-app-desc">${isZh ? `${pY}年 ${MONTH_NAMES[pM]} · Claude Code 用量` : `${MONTH_NAMES[pM]} ${pY} · Claude Code usage`}</div>
+            <div class="pc-app-name">${t('appTitle')}</div>
+            <div class="pc-app-desc">${dateLabel} · ${t('pUsage')}</div>
           </div>
         </div>
       </div>
@@ -1458,15 +1625,15 @@ function openPoster() {
         <div class="pc-data-row">
           <div class="pc-data-item">
             <div class="pc-data-val" style="font-size:18px">$${totalCost.toFixed(2)}</div>
-            <div class="pc-data-lbl">💰 ${isZh ? '月度花费' : 'Spent'}</div>
+            <div class="pc-data-lbl">💰 ${t('pSpent')}</div>
           </div>
           <div class="pc-data-item">
             <div class="pc-data-val" style="font-size:18px">${fmtTokensWest(totalTokens)}</div>
-            <div class="pc-data-lbl">⚡ ${isZh ? '总 Token' : 'Tokens'}</div>
+            <div class="pc-data-lbl">⚡ ${t('pTokens')}</div>
           </div>
           <div class="pc-data-item">
             <div class="pc-data-val" style="font-size:18px">$${peakCost.toFixed(0)}</div>
-            <div class="pc-data-lbl">🔥 ${isZh ? '单日峰值' : 'Peak day'}</div>
+            <div class="pc-data-lbl">🔥 ${t('pPeak')}</div>
           </div>
         </div>
       </div>
@@ -1480,11 +1647,11 @@ function openPoster() {
         <div class="pc-qr-wrap">
           <img class="pc-qr-img" crossorigin="anonymous"
             src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://yifanliu734-coder.github.io/token-calendar/&bgcolor=ffffff&color=1A1A1A&margin=8" alt="QR">
-          <span class="pc-qr-hint">${isZh ? '扫码体验' : 'Scan to try'}</span>
+          <span class="pc-qr-hint">${t('pScan')}</span>
         </div>
       </div>
     </div>
-    <button class="po-save-btn" onclick="savePoster()">⬇ ${isZh ? '保存海报' : 'Save poster'}</button>
+    <button class="po-save-btn" onclick="savePoster()">⬇ ${t('pSave')}</button>
   `;
   document.body.appendChild(div);
   div.style.opacity = '0';

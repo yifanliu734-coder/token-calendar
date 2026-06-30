@@ -1,0 +1,32 @@
+# Token Calendar
+
+> A privacy-first calendar heatmap for AI coding token spend. It turns any usage export (CSV or JSON) into a GitHub-contributions-style heatmap so you can see daily cost, token volume, peak days, streaks, and per-model breakdown at a glance. The entire app is a single HTML file that runs fully in the browser — no backend, no tracking, no account. All data stays in the browser's localStorage.
+
+## What it is
+- A single self-contained `index.html` (vanilla HTML/CSS/JS, ~1,800 lines, zero dependencies, no build step).
+- Open it by double-clicking the file, or use the hosted version. Works offline.
+- Tool-agnostic: built for Claude Code / Anthropic, Codex / OpenAI, Gemini CLI, or any tool that can export usage with a date, a token count, and a cost.
+
+## Key features
+- Calendar heatmap of daily token volume or cost, color-graded.
+- Day / Week / Month / Year views with totals, daily average, peak day, longest streak.
+- Per-model breakdown per day.
+- 9 UI languages: English, 中文, 日本語, 한국어, Español, Français, Deutsch, Português, Русский.
+- Dark / light themes with selectable accent color.
+- Exportable share poster (PNG) of the month, with a QR code back to the tool.
+- 100% local — nothing is uploaded.
+
+## Importing data
+The importer auto-detects columns from a header row. It accepts:
+- JSON: an object keyed by `YYYY-MM-DD` with `{cost:number, tokens:number, models:string[]}`, or an array of such records each containing a `date`.
+- CSV from Anthropic Console (recognizes `input tokens` + `output tokens`, `cost`, `model`, `date`).
+- CSV from any other tool: it matches a date column (`date`/`day`), a token column (`token`, or separate input/output token columns), an optional cost column (`cost`/`price`), and an optional `model` column.
+- Minimal 3-column CSV: `date,tokens,cost`.
+
+## Links
+- Live demo: https://yifanliu734-coder.github.io/token-calendar/
+- Source: https://github.com/yifanliu734-coder/token-calendar
+- License: MIT
+
+## Use / remix
+MIT licensed — free to use, copy, modify, self-host, or fork. Because it is one HTML file with no dependencies, it is trivial to download, read end-to-end, embed, or adapt to a new usage format by extending the CSV/JSON parser.
