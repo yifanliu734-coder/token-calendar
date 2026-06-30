@@ -385,7 +385,7 @@ body.light .heat-cell.tier-peak .h-top, body.light .heat-cell.tier-peak .h-bot {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 0; gap: 0;
   touch-action: none;
-  background: var(--accent);
+  background: #0B0B10;
   overflow: hidden;
 }
 #poster-overlay .po-ball {
@@ -401,14 +401,13 @@ body.light .heat-cell.tier-peak .h-top, body.light .heat-cell.tier-peak .h-bot {
 .poster-card {
   position: relative; z-index: 2;
   width: calc(100% - 40px); max-width: 320px;
-  background: rgba(255,255,255,.94);
-  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  background: #16161D;
   border-radius: 22px; overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.9);
+  box-shadow: 0 20px 60px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
   font-family: -apple-system, 'PingFang SC', 'SF Pro Rounded', sans-serif;
-  color: #1A1A1A;
+  color: #fff;
 }
-.pc-card-top { padding: 16px 20px 12px; position: relative; overflow: hidden; background: rgba(255,255,255,.72); }
+.pc-card-top { padding: 16px 20px 12px; position: relative; overflow: hidden; background: rgba(255,255,255,.03); }
 .pc-card-top::after { content: ''; position: absolute; width: 120px; height: 120px; border-radius: 50%; background: var(--accent-soft); top: -40px; right: -30px; }
 .pc-app-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .pc-app-icon {
@@ -418,33 +417,33 @@ body.light .heat-cell.tier-peak .h-top, body.light .heat-cell.tier-peak .h-bot {
   font-size: 22px; flex-shrink: 0;
   box-shadow: 0 4px 12px var(--accent-glow);
 }
-.pc-app-name { font-size: 18px; font-weight: 900; color: #1A1A1A; letter-spacing: -.02em; }
-.pc-app-desc { font-size: 11px; font-weight: 600; color: rgba(0,0,0,.45); margin-top: 1px; }
+.pc-app-name { font-size: 18px; font-weight: 900; color: #fff; letter-spacing: -.02em; }
+.pc-app-desc { font-size: 11px; font-weight: 600; color: rgba(255,255,255,.45); margin-top: 1px; }
 .pc-data { padding: 12px 20px 10px; }
 .pc-data-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
 .pc-data-item { text-align: center; flex: 1; }
-.pc-data-val { font-size: 22px; font-weight: 900; color: #1A1A1A; letter-spacing: -.04em; line-height: 1; margin-bottom: 4px; }
-.pc-data-lbl { font-size: 10px; font-weight: 700; color: #aaa; letter-spacing: .03em; }
+.pc-data-val { font-size: 22px; font-weight: 900; color: #fff; letter-spacing: -.04em; line-height: 1; margin-bottom: 4px; }
+.pc-data-lbl { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.4); letter-spacing: .03em; }
 .pc-cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; padding: 4px 14px 10px; }
-.pc-dow { text-align: center; font-size: 8px; font-weight: 800; color: #bbb; padding: 2px 0; }
+.pc-dow { text-align: center; font-size: 8px; font-weight: 800; color: rgba(255,255,255,.3); padding: 2px 0; }
 .pc-mday {
   aspect-ratio: 1; border-radius: 4px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 1px; background: transparent;
+  gap: 1px; background: rgba(255,255,255,.03);
 }
 .pc-mday.empty { background: transparent; }
-.pc-mday .mday-num { font-size: 7px; font-weight: 700; line-height: 1; color: #d0d0d0; }
+.pc-mday .mday-num { font-size: 7px; font-weight: 700; line-height: 1; color: rgba(255,255,255,.35); }
 .pc-mday .mday-tok { font-size: 6px; font-weight: 800; line-height: 1; }
 .pc-mday.today .mday-num { color: #D97757; font-weight: 900; }
-.pc-mday.future .mday-num { color: #e8e8e8; }
-.pc-foot { padding: 10px 20px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid #F2F2F2; }
+.pc-mday.future .mday-num { color: rgba(255,255,255,.15); }
+.pc-foot { padding: 10px 20px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(255,255,255,.07); }
 .pc-foot-left { flex: 1; }
-.pc-by { font-size: 9px; font-weight: 700; color: #bbb; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 3px; }
-.pc-name { font-size: 28px; font-weight: 900; color: #1A1A1A; letter-spacing: -.04em; line-height: 1; margin-bottom: 4px; }
-.pc-built { font-size: 9px; font-weight: 700; color: #bbb; letter-spacing: .04em; }
+.pc-by { font-size: 9px; font-weight: 700; color: rgba(255,255,255,.4); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 3px; }
+.pc-name { font-size: 28px; font-weight: 900; color: #fff; letter-spacing: -.04em; line-height: 1; margin-bottom: 4px; }
+.pc-built { font-size: 9px; font-weight: 700; color: rgba(255,255,255,.4); letter-spacing: .04em; }
 .pc-qr-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-.pc-qr-img { width: 58px; height: 58px; border-radius: 8px; border: 1.5px solid #F0F0F0; display: block; }
-.pc-qr-hint { font-size: 8px; font-weight: 700; color: #bbb; letter-spacing: .06em; text-transform: uppercase; }
+.pc-qr-img { width: 58px; height: 58px; border-radius: 8px; border: 1.5px solid rgba(255,255,255,.12); display: block; }
+.pc-qr-hint { font-size: 8px; font-weight: 700; color: rgba(255,255,255,.4); letter-spacing: .06em; text-transform: uppercase; }
 .po-save-btn {
   position: relative; z-index: 2; margin-top: 18px;
   width: calc(100% - 40px); max-width: 320px;
@@ -1395,7 +1394,8 @@ function openPoster() {
   const maxTokens = monthAmts.length ? Math.max(...monthAmts.map(x=>x.tokens)) : 1;
 
   // calendar grid html
-  const DOW_LABELS = ['日','一','二','三','四','五','六'];
+  const isZh = _lang === 'zh';
+  const DOW_LABELS = isZh ? ['日','一','二','三','四','五','六'] : ['Su','Mo','Tu','We','Th','Fr','Sa'];
   let calHtml = DOW_LABELS.map(l=>`<div class="pc-dow">${l}</div>`).join('');
   for (let i=0; i<startDow; i++) calHtml += `<div class="pc-mday empty"></div>`;
   const todayD = (pY===today.getFullYear()&&pM===today.getMonth()) ? today.getDate() : -1;
@@ -1421,7 +1421,9 @@ function openPoster() {
     calHtml += `<div class="${cls}"><span class="mday-num">${d}</span></div>`;
   }
 
-  const MONTH_NAMES = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  const MONTH_NAMES = isZh
+    ? ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+    : ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
   // ball decorations (tinted by accent)
   const r3=parseInt(accentColor.slice(1,3),16), g3=parseInt(accentColor.slice(3,5),16), b3=parseInt(accentColor.slice(5,7),16);
@@ -1447,8 +1449,8 @@ function openPoster() {
         <div class="pc-app-row">
           <div class="pc-app-icon" style="background:linear-gradient(135deg,${lighten(60)},${accentColor})">🤖</div>
           <div>
-            <div class="pc-app-name">Token 日历</div>
-            <div class="pc-app-desc">${pY}年 ${MONTH_NAMES[pM]} · Claude Code 用量</div>
+            <div class="pc-app-name">${isZh ? 'Token 日历' : 'Token Calendar'}</div>
+            <div class="pc-app-desc">${isZh ? `${pY}年 ${MONTH_NAMES[pM]} · Claude Code 用量` : `${MONTH_NAMES[pM]} ${pY} · Claude Code usage`}</div>
           </div>
         </div>
       </div>
@@ -1456,15 +1458,15 @@ function openPoster() {
         <div class="pc-data-row">
           <div class="pc-data-item">
             <div class="pc-data-val" style="font-size:18px">$${totalCost.toFixed(2)}</div>
-            <div class="pc-data-lbl">💰 月度花费</div>
+            <div class="pc-data-lbl">💰 ${isZh ? '月度花费' : 'Spent'}</div>
           </div>
           <div class="pc-data-item">
             <div class="pc-data-val" style="font-size:18px">${fmtTokensWest(totalTokens)}</div>
-            <div class="pc-data-lbl">⚡ 总 Token</div>
+            <div class="pc-data-lbl">⚡ ${isZh ? '总 Token' : 'Tokens'}</div>
           </div>
           <div class="pc-data-item">
             <div class="pc-data-val" style="font-size:18px">$${peakCost.toFixed(0)}</div>
-            <div class="pc-data-lbl">🔥 单日峰值</div>
+            <div class="pc-data-lbl">🔥 ${isZh ? '单日峰值' : 'Peak day'}</div>
           </div>
         </div>
       </div>
@@ -1478,11 +1480,11 @@ function openPoster() {
         <div class="pc-qr-wrap">
           <img class="pc-qr-img" crossorigin="anonymous"
             src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://yifanliu734-coder.github.io/token-calendar/&bgcolor=ffffff&color=1A1A1A&margin=8" alt="QR">
-          <span class="pc-qr-hint">扫码体验</span>
+          <span class="pc-qr-hint">${isZh ? '扫码体验' : 'Scan to try'}</span>
         </div>
       </div>
     </div>
-    <button class="po-save-btn" onclick="savePoster()">⬇ 保存海报</button>
+    <button class="po-save-btn" onclick="savePoster()">⬇ ${isZh ? '保存海报' : 'Save poster'}</button>
   `;
   document.body.appendChild(div);
   div.style.opacity = '0';
