@@ -1,0 +1,47 @@
+{
+  "name": "token-calendar-export",
+  "version": "1.0.0",
+  "description": "Export your Claude Code token usage from local logs as JSON for Token Calendar — includes an MCP server to query your usage right inside Claude.",
+  "bin": {
+    "token-calendar-export": "export-usage.js",
+    "token-calendar-mcp": "mcp-server.js"
+  },
+  "main": "export-usage.js",
+  "files": [
+    "export-usage.js",
+    "mcp-server.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "export": "node export-usage.js",
+    "mcp": "node mcp-server.js"
+  },
+  "optionalDependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0"
+  },
+  "keywords": [
+    "claude-code",
+    "token",
+    "usage",
+    "cost",
+    "mcp",
+    "anthropic",
+    "llm",
+    "cli",
+    "token-calendar"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yifanliu734-coder/token-calendar.git"
+  },
+  "homepage": "https://github.com/yifanliu734-coder/token-calendar#readme",
+  "bugs": {
+    "url": "https://github.com/yifanliu734-coder/token-calendar/issues"
+  },
+  "author": "Hakar",
+  "license": "MIT"
+}

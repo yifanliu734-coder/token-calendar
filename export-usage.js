@@ -35,18 +35,6 @@ function tierOf(model) {
   return null;
 }
 
-function parseArgs(argv) {
-  const a = { out: null, days: null, copy: false };
-  for (let i = 2; i < argv.length; i++) {
-    const k = argv[i];
-    if (k === '--out')  a.out = argv[++i];
-    else if (k === '--days') a.days = parseInt(argv[++i], 10);
-    else if (k === '--copy') a.copy = true;
-    else if (k === '--help' || k === '-h') a.help = true;
-  }
-  return a;
-}
-
 function* walkJsonl(dir) {
   let entries;
   try { entries = fs.readdirSync(dir, { withFileTypes: true }); }
@@ -64,24 +52,17 @@ function localDate(ts) {
   return d.toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
 }
 
-function main() {
-  const args = parseArgs(process.argv);
-  if (args.help) {
-    process.stderr.write('Usage: node export-usage.js [--out file] [--days N] [--copy]\n');
-    return;
-  }
-
-  const root = path.join(os.homedir(), '.claude', 'projects');
-  if (!fs.existsSync(root)) {
-    process.stderr.write(`No Claude Code logs found at ${root}\n`);
-    process.exit(1);
-  }
+// Scan local Claude Code logs and aggregate per-day usage.
+// Returns { daily, files, rows } or { error } when logs are missing.
+function aggregate(opts = {}) {
+  const root = opts.root || path.join(os.homedir(), '.claude', 'projects');
+  if (!fs.existsSync(root)) return { error: `No Claude Code logs found at ${root}` };
 
   let cutoff = null;
-  if (args.days && args.days > 0) {
-    cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - args.days);
-    cutoff = cutoff.toLocaleDateString('en-CA');
+  if (opts.days && opts.days > 0) {
+    const c = new Date();
+    c.setDate(c.getDate() - opts.days);
+    cutoff = c.toLocaleDateString('en-CA');
   }
 
   const daily = {};
@@ -103,10 +84,10 @@ function main() {
       if (!date) continue;
       if (cutoff && date < cutoff) continue;
 
-      const inp   = u.input_tokens || 0;
-      const out   = u.output_tokens || 0;
-      const cW    = u.cache_creation_input_tokens || 0;
-      const cR    = u.cache_read_input_tokens || 0;
+      const inp = u.input_tokens || 0;
+      const out = u.output_tokens || 0;
+      const cW  = u.cache_creation_input_tokens || 0;
+      const cR  = u.cache_read_input_tokens || 0;
       const tokens = inp + out + cW + cR;
       if (tokens === 0) continue;
 
@@ -127,14 +108,51 @@ function main() {
     }
   }
 
+  return { daily, files, rows };
+}
+
+function fmtTokens(n) {
+  return n >= 1e9 ? (n/1e9).toFixed(2)+'B'
+       : n >= 1e6 ? (n/1e6).toFixed(1)+'M'
+       : n >= 1e3 ? (n/1e3).toFixed(0)+'K' : String(n);
+}
+
+function summarize(daily) {
   const dates = Object.keys(daily).sort();
+  const tokens = dates.reduce((s, d) => s + daily[d].tokens, 0);
+  const cost = dates.reduce((s, d) => s + daily[d].cost, 0);
+  return { dates, tokens, cost };
+}
+
+function parseArgs(argv) {
+  const a = { out: null, days: null, copy: false };
+  for (let i = 2; i < argv.length; i++) {
+    const k = argv[i];
+    if (k === '--out')  a.out = argv[++i];
+    else if (k === '--days') a.days = parseInt(argv[++i], 10);
+    else if (k === '--copy') a.copy = true;
+    else if (k === '--help' || k === '-h') a.help = true;
+  }
+  return a;
+}
+
+function main() {
+  const args = parseArgs(process.argv);
+  if (args.help) {
+    process.stderr.write('Usage: token-calendar-export [--out file] [--days N] [--copy]\n');
+    return;
+  }
+
+  const { daily, files, rows, error } = aggregate({ days: args.days });
+  if (error) { process.stderr.write(error + '\n'); process.exit(1); }
+
+  const { dates, tokens, cost } = summarize(daily);
   if (!dates.length) {
     process.stderr.write('No usage rows found. Nothing to export.\n');
     process.exit(1);
   }
 
   const json = JSON.stringify(daily, null, 2);
-
   if (args.out) {
     fs.writeFileSync(args.out, json);
   } else if (args.copy) {
@@ -144,17 +162,16 @@ function main() {
     process.stdout.write(json + '\n');
   }
 
-  const totalTokens = dates.reduce((s, d) => s + daily[d].tokens, 0);
-  const totalCost   = dates.reduce((s, d) => s + daily[d].cost, 0);
-  const fmt = (n) => n >= 1e9 ? (n/1e9).toFixed(2)+'B' : n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(0)+'K' : String(n);
   process.stderr.write(
     `\nScanned ${files} files, ${rows} usage rows.\n` +
     `${dates.length} active days  (${dates[0]} → ${dates[dates.length-1]})\n` +
-    `~${fmt(totalTokens)} tokens  ·  ~$${totalCost.toFixed(2)} estimated\n` +
+    `~${fmtTokens(tokens)} tokens  ·  ~$${cost.toFixed(2)} estimated\n` +
     (args.out ? `Written to ${args.out}\n` :
      args.copy ? `Copied to clipboard — paste it into Token Calendar's import box.\n` :
      `\nPaste the JSON above into Token Calendar's import box (cost is an estimate; see Anthropic Console for your real bill).\n`)
   );
 }
 
-main();
+module.exports = { aggregate, summarize, fmtTokens, PRICING };
+
+if (require.main === module) main();
