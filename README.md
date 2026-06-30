@@ -38,6 +38,12 @@ Go to the [live demo](https://yifanliu734-coder.github.io/token-calendar/).
 
 The demo data is fake — clear it and import your own to see real numbers.
 
+## Share your month
+
+Tap the share button to export a poster of your month — with a QR code linking back to the tool.
+
+<img src="screenshots/share.png" width="300" alt="Share poster with QR code">
+
 ## Tech
 
 Vanilla HTML/CSS/JS in a single file. No build step, no dependencies, no server. Roughly 1,600 lines you can read top to bottom.
